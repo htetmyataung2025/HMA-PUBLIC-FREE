@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HMA Public Free Key</title>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Pyidaungsu', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 32px;
+            padding: 40px 35px;
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+        }
+        h1 {
+            text-align: center;
+            color: #fff;
+            font-weight: 600;
+            font-size: 2rem;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #a89fcf;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 15px;
+        }
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            max-width: 380px;
+            margin: 0 auto;
+        }
+        .login-form select, .login-form input {
+            padding: 14px 18px;
+            border-radius: 50px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(0,0,0,0.3);
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s;
+        }
+        .login-form select option { background: #1e1e2f; color: #fff; }
+        .login-form select:focus, .login-form input:focus {
+            border-color: #7c5cfc;
+            box-shadow: 0 0 15px rgba(124, 92, 252, 0.3);
+        }
+        .login-form button {
+            padding: 14px;
+            border-radius: 50px;
+            border: none;
+            background: linear-gradient(135deg, #7c5cfc, #5c3dcf);
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            letter-spacing: 1px;
+        }
+        .login-form button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(124, 92, 252, 0.5);
+        }
+        .error-msg {
+            color: #ff6b6b;
+            text-align: center;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            min-height: 24px;
+        }
+        /* Dashboard */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .user-badge {
+            background: rgba(124, 92, 252, 0.2);
+            padding: 6px 18px;
+            border-radius: 50px;
+            color: #c4b5ff;
+            font-size: 0.9rem;
+            border: 1px solid rgba(124, 92, 252, 0.3);
+        }
+        .logout-btn {
+            background: rgba(255, 107, 107, 0.15);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            color: #ff6b6b;
+            padding: 8px 22px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .logout-btn:hover {
+            background: #ff6b6b;
+            color: #fff;
+        }
+        .key-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 20px 0;
+            max-height: 450px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        .key-grid::-webkit-scrollbar { width: 6px; }
+        .key-grid::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
+        .key-grid::-webkit-scrollbar-thumb { background: #7c5cfc; border-radius: 10px; }
+
+        .key-item {
+            background: rgba(255,255,255,0.05);
+            padding: 12px 18px;
+            border-radius: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            border-left: 4px solid #7c5cfc;
+            transition: 0.2s;
+        }
+        .key-item:hover { background: rgba(255,255,255,0.1); }
+        .key-text {
+            color: #e0d9ff;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            word-break: break-all;
+            flex: 1;
+        }
+        .key-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .key-actions button {
+            background: rgba(255,255,255,0.08);
+            border: none;
+            color: #fff;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.9rem;
+        }
+        .key-actions .copy-btn:hover { background: #2ecc71; color: #fff; }
+        .key-actions .del-btn:hover { background: #e74c3c; color: #fff; }
+        .key-actions .del-btn { color: #ff6b6b; }
+
+        .admin-tools {
+            margin-top: 25px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 25px;
+        }
+        .admin-tools input {
+            flex: 1;
+            padding: 12px 18px;
+            border-radius: 50px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(0,0,0,0.3);
+            color: #fff;
+            min-width: 180px;
+        }
+        .admin-tools button {
+            padding: 12px 28px;
+            border-radius: 50px;
+            border: none;
+            background: #2ecc71;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .admin-tools button:hover { background: #27ae60; transform: scale(1.03); }
+        .no-keys { color: #888; text-align: center; padding: 30px 0; }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .container { padding: 25px 18px; }
+            h1 { font-size: 1.6rem; }
+            .key-item { flex-direction: column; align-items: flex-start; }
+            .key-actions { align-self: flex-end; }
+        }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<div class="container" id="app">
+    <!-- LOGIN SECTION -->
+    <div id="loginSection">
+        <h1>🔑 HMA PUBLIC KEY</h1>
+        <div class="subtitle">Outline VPN Free Keys</div>
+        <div class="login-form">
+            <select id="roleSelect">
+                <option value="admin">👤 Admin</option>
+                <option value="user">👥 User</option>
+            </select>
+            <input type="text" id="usernameInput" placeholder="Username (admin / user)" value="admin">
+            <input type="password" id="passwordInput" placeholder="Password">
+            <button id="loginBtn"><i class="fas fa-sign-in-alt"></i> ဝင်မည်</button>
+            <div id="loginError" class="error-msg"></div>
+        </div>
+    </div>
+
+    <!-- DASHBOARD SECTION -->
+    <div id="dashboardSection" class="hidden">
+        <div class="dashboard-header">
+            <div>
+                <span style="color:#fff; font-weight:600;">📡 HMA Keys</span>
+                <span class="user-badge" id="roleBadge">Admin</span>
+            </div>
+            <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> ထွက်ရန်</button>
+        </div>
+
+        <div id="keyListContainer" class="key-grid">
+            <!-- Keys will be rendered here -->
+        </div>
+
+        <!-- Admin Tools -->
+        <div id="adminTools" class="admin-tools hidden">
+            <input type="text" id="newKeyInput" placeholder="Enter new Outline key... (e.g. ss://...)" />
+            <button id="addKeyBtn"><i class="fas fa-plus"></i> Add Key</button>
+            <span style="color:#888; font-size:0.8rem; width:100%; margin-top:5px;">* Admin အတွက် သီးသန့် ထည့်သွင်းနိုင်သည်။</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ---------- INITIAL DATA (Public Outline Free Keys) ----------
+        let keysData = [
+            "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpIMEV6V1c4VFM=@us-1.hma.com:443/?outline=1",
+            "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpXeUZvYzJkVQ==@uk-1.hma.com:993/?outline=1",
+            "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpKbGxIS3JkWQ==@sg-1.hma.com:8080/?outline=1",
+            "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpGZGVyU2l0ZQ==@jp-1.hma.com:8443/?outline=1",
+            "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpNdWx0aUtleQ==@de-1.hma.com:53/?outline=1",
+            "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpBZG1pblRlc3Q=@ca-1.hma.com:1194/?outline=1",
+            "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpGcmVlS2V5MQ==@au-1.hma.com:3128/?outline=1",
+            "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpQdWJsaWNfMQ==@fr-1.hma.com:1080/?outline=1",
+            "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpSdXNzaWFuX0tleQ==@ru-1.hma.com:1443/?outline=1",
+            "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpZb3VUdWJlIQ==@in-1.hma.com:5555/?outline=1"
+        ];
+
+        // For demo, we store in localStorage to persist
+        function loadKeys() {
+            const stored = localStorage.getItem('hma_keys');
+            if (stored) {
+                try { keysData = JSON.parse(stored); } catch(e) {}
+            } else {
+                // Save initial if not exists
+                localStorage.setItem('hma_keys', JSON.stringify(keysData));
+            }
+        }
+        function saveKeys() {
+            localStorage.setItem('hma_keys', JSON.stringify(keysData));
+        }
+        loadKeys();
+
+        // ---------- DOM refs ----------
+        const loginSection = document.getElementById('loginSection');
+        const dashboardSection = document.getElementById('dashboardSection');
+        const roleSelect = document.getElementById('roleSelect');
+        const usernameInput = document.getElementById('usernameInput');
+        const passwordInput = document.getElementById('passwordInput');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginError = document.getElementById('loginError');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const roleBadge = document.getElementById('roleBadge');
+        const keyListContainer = document.getElementById('keyListContainer');
+        const adminTools = document.getElementById('adminTools');
+        const newKeyInput = document.getElementById('newKeyInput');
+        const addKeyBtn = document.getElementById('addKeyBtn');
+
+        let currentRole = null; // 'admin' or 'user'
+
+        // ---------- Auth Logic (Simple Hardcoded) ----------
+        function authenticate(role, username, password) {
+            // Admin credentials
+            if (role === 'admin' && username === 'admin' && password === 'admin123') {
+                return true;
+            }
+            // User credentials
+            if (role === 'user' && username === 'user' && password === 'user123') {
+                return true;
+            }
+            return false;
+        }
+
+        // ---------- Render Keys ----------
+        function renderKeys(role) {
+            let displayKeys = [];
+            if (role === 'admin') {
+                displayKeys = [...keysData];
+            } else {
+                // User sees only first 5 keys (or a subset)
+                displayKeys = keysData.slice(0, 5);
+                if (keysData.length < 5) displayKeys = [...keysData];
+            }
+
+            if (displayKeys.length === 0) {
+                keyListContainer.innerHTML = `<div class="no-keys"><i class="fas fa-key" style="font-size:2rem; opacity:0.3;"></i><br>No keys available.</div>`;
+                return;
+            }
+
+            let html = '';
+            displayKeys.forEach((key, index) => {
+                // Find real index for deletion (admin needs to delete from original)
+                const realIndex = keysData.indexOf(key);
+                html += `
+                    <div class="key-item" data-index="${realIndex}">
+                        <span class="key-text"><i class="fas fa-link" style="color:#7c5cfc; margin-right:8px;"></i>${escapeHtml(key)}</span>
+                        <div class="key-actions">
+                            <button class="copy-btn" onclick="copyKey('${escapeHtml(key)}')" title="Copy"><i class="fas fa-copy"></i></button>
+                            ${role === 'admin' ? `<button class="del-btn" onclick="deleteKey(${realIndex})" title="Delete"><i class="fas fa-trash"></i></button>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            keyListContainer.innerHTML = html;
+        }
+
+        // Helper for escaping
+        function escapeHtml(text) {
+            return text.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        // Global functions for onclick
+        window.copyKey = function(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('✅ Key copied to clipboard!');
+            }).catch(() => {
+                // Fallback
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('✅ Key copied!');
+            });
+        };
+
+        window.deleteKey = function(index) {
+            if (currentRole !== 'admin') return;
+            if (confirm('Are you sure you want to delete this key?')) {
+                keysData.splice(index, 1);
+                saveKeys();
+                renderKeys(currentRole);
+            }
+        };
+
+        // ---------- Add Key (Admin) ----------
+        function addNewKey() {
+            if (currentRole !== 'admin') return;
+            const val = newKeyInput.value.trim();
+            if (!val) {
+                alert('Please enter a valid Outline key.');
+                return;
+            }
+            keysData.push(val);
+            saveKeys();
+            renderKeys(currentRole);
+            newKeyInput.value = '';
+        }
+        addKeyBtn.addEventListener('click', addNewKey);
+        newKeyInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') addNewKey(); });
+
+        // ---------- Login ----------
+        function handleLogin() {
+            const role = roleSelect.value;
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
+
+            if (!username || !password) {
+                loginError.textContent = '⚠️ Username နဲ့ Password ထည့်ပါ။';
+                return;
+            }
+
+            if (authenticate(role, username, password)) {
+                currentRole = role;
+                loginError.textContent = '';
+                // Switch UI
+                loginSection.classList.add('hidden');
+                dashboardSection.classList.remove('hidden');
+                roleBadge.textContent = role === 'admin' ? '👑 Admin' : '👤 User';
+                // Show admin tools
+                if (role === 'admin') {
+                    adminTools.classList.remove('hidden');
+                } else {
+                    adminTools.classList.add('hidden');
+                }
+                renderKeys(role);
+                // Clear password
+                passwordInput.value = '';
+            } else {
+                loginError.textContent = '❌ Username သို့မဟုတ် Password မှားနေပါသည်။';
+            }
+        }
+
+        loginBtn.addEventListener('click', handleLogin);
+        passwordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
+
+        // ---------- Logout ----------
+        function handleLogout() {
+            currentRole = null;
+            loginSection.classList.remove('hidden');
+            dashboardSection.classList.add('hidden');
+            // reset form
+            usernameInput.value = 'admin';
+            passwordInput.value = '';
+            loginError.textContent = '';
+            roleSelect.value = 'admin';
+        }
+        logoutBtn.addEventListener('click', handleLogout);
+
+        // ---------- Auto-login check? No, keep logged out by default. ----------
+        // If accidentally stored, but we don't auto-login for security.
+
+        console.log('🔐 HMA Public Free Key System Loaded.');
+        console.log('👑 Admin: admin / admin123');
+        console.log('👤 User: user / user123');
+    })();
+</script>
+
+</body>
+</html>
